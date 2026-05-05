@@ -1,10 +1,6 @@
 # mMIG Optimization Flow - ESL Paper Artifact
 
 Artifact for the paper:
-
-> Mrunal Shende, Bodhisatwa Mazumdar. "Mixed Majority-Minority Inverter Graphs
-> for Inverter-Aware AQFP-Oriented Logic Optimization." Submitted manuscript.
-
 This repository contains the pre-computed results, the figure generation script,
 and the scripts to fully reproduce Table 1 from the paper.
 
