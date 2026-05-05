@@ -1,0 +1,223 @@
+{
+  "id": "mmig_flow",
+  "name": "mMIG Hybrid Flow",
+  "description": "MIG baseline + mMIG optimization stages in blif2mig_2",
+  "parameters": {
+    "mode": {
+      "type": "enum",
+      "enum": [
+        "depth",
+        "area"
+      ],
+      "default": "depth",
+      "description": "Primary optimization objective. depth minimizes logic levels; area minimizes gate count."
+    },
+    "mig_flow": {
+      "type": "enum",
+      "enum": [
+        "standard",
+        "dac19_default",
+        "dac19_area",
+        "dac19_compat",
+        "compress2rs",
+        "legacy"
+      ],
+      "default": "standard",
+      "description": "Majority baseline schedule used before/with mMIG stages."
+    },
+    "mig_allow_zero_gain": {
+      "type": "bool",
+      "default": false,
+      "description": "Allow zero-gain majority rewrites. May increase exploration and runtime."
+    },
+    "rw_override": {
+      "type": "bool",
+      "default": false,
+      "description": "Enable explicit rewrite parameter overrides (rw_cut, rw_cut_limit) for the majority phase."
+    },
+    "rw_cut": {
+      "type": "int",
+      "min": 2,
+      "max": 8,
+      "default": 4,
+      "description": "Cut size for rewriting when rw_override is enabled."
+    },
+    "rw_cut_limit": {
+      "type": "int",
+      "min": 1,
+      "max": 64,
+      "default": 10,
+      "description": "Cut enumeration limit for rewriting when rw_override is enabled."
+    },
+    "mmig_flow": {
+      "type": "enum",
+      "enum": [
+        "round_robin",
+        "dac19_default",
+        "dac19_area",
+        "compress2rs",
+        "legacy"
+      ],
+      "default": "round_robin",
+      "description": "mMIG schedule preset. round_robin is the default balanced sequence."
+    },
+    "mmig_max_iters": {
+      "type": "int",
+      "min": 1,
+      "max": 32,
+      "default": 2,
+      "description": "Maximum rewrite iterations per mMIG rewrite stage."
+    },
+    "mmig_stage": {
+      "type": "enum",
+      "enum": [
+        "pre",
+        "post",
+        "both"
+      ],
+      "default": "both",
+      "description": "Where to run mMIG stages relative to majority flow: pre, post, or both."
+    },
+    "mmig_cec": {
+      "type": "bool",
+      "default": true,
+      "description": "Enable equivalence checking guards for mMIG stages. Recommended for correctness."
+    },
+    "mmig_allow_zero_gain": {
+      "type": "bool",
+      "default": false,
+      "description": "Allow zero-gain mMIG rewrites. Can increase search but may add runtime."
+    },
+    "mmig_enable_sr5": {
+      "type": "bool",
+      "default": false,
+      "description": "Enable SR5 rule path (disabled by default for stability)."
+    },
+    "mmig_advanced": {
+      "type": "bool",
+      "default": false,
+      "description": "Enable advanced post-native mMIG stages (resub/cut/refactor stack)."
+    },
+    "mmig_advanced_rounds": {
+      "type": "int",
+      "min": 1,
+      "max": 8,
+      "default": 1,
+      "description": "Number of advanced optimization rounds when mmig_advanced is enabled."
+    },
+    "mmig_adv_no_exact": {
+      "type": "bool",
+      "default": false,
+      "description": "Disable advanced exact-rewriting stage to reduce regressions/rollbacks."
+    },
+    "mmig_adv_no_balance": {
+      "type": "bool",
+      "default": false,
+      "description": "Disable advanced balancing stage to avoid depth-oriented area regressions."
+    },
+    "mmig_dont_cares": {
+      "type": "bool",
+      "default": false,
+      "description": "P2: Enable don't-care-aware resubstitution/refactoring/exact-rewriting for circuits under 10K gates."
+    },
+    "mmig_interleaved_seeding": {
+      "type": "bool",
+      "default": false,
+      "description": "P3: Re-seed minority candidates between advanced optimization rounds."
+    },
+    "mmig_dual_inv": {
+      "type": "bool",
+      "default": true,
+      "description": "P1: Enable dual-inversion propagation (2-of-3 inverted fanins) with fanout-aware gain."
+    },
+    "mmig_auto_sr5": {
+      "type": "bool",
+      "default": true,
+      "description": "P7: Automatically enable SR5 algebraic rewriting rule when CEC is active."
+    }
+  },
+  "steps": [
+    {
+      "id": "blif2mig2",
+      "tool": "blif2mig_2",
+      "metrics_tool": "blif2mig_2",
+      "binary": "build_check/examples/blif2mig_2",
+      "args": [
+        "{benchmark_path}",
+        "{out_base}",
+        "--mode={mode}",
+        "--mig-flow={mig_flow}",
+        {
+          "arg": "--mig-allow-zero-gain",
+          "when_param": "mig_allow_zero_gain"
+        },
+        {
+          "arg": "--rw-cut={rw_cut}",
+          "when_param": "rw_override"
+        },
+        {
+          "arg": "--rw-cut-limit={rw_cut_limit}",
+          "when_param": "rw_override"
+        },
+        "--enable-mmig",
+        "--mmig-flow={mmig_flow}",
+        "--mmig-max-iters={mmig_max_iters}",
+        "--mmig-stage={mmig_stage}",
+        {
+          "arg": "--mmig-cec",
+          "when_param": "mmig_cec"
+        },
+        {
+          "arg": "--no-mmig-cec",
+          "when_not_param": "mmig_cec"
+        },
+        {
+          "arg": "--mmig-allow-zero-gain",
+          "when_param": "mmig_allow_zero_gain"
+        },
+        {
+          "arg": "--mmig-enable-sr5",
+          "when_param": "mmig_enable_sr5"
+        },
+        {
+          "arg": "--mmig-advanced",
+          "when_param": "mmig_advanced"
+        },
+        {
+          "arg": "--mmig-advanced-rounds={mmig_advanced_rounds}",
+          "when_param": "mmig_advanced"
+        },
+        {
+          "arg": "--mmig-adv-no-exact",
+          "when_param": "mmig_adv_no_exact"
+        },
+        {
+          "arg": "--mmig-adv-no-balance",
+          "when_param": "mmig_adv_no_balance"
+        },
+        {
+          "arg": "--mmig-dont-cares",
+          "when_param": "mmig_dont_cares"
+        },
+        {
+          "arg": "--mmig-interleaved-seeding",
+          "when_param": "mmig_interleaved_seeding"
+        },
+        {
+          "arg": "--no-mmig-dual-inv",
+          "when_not_param": "mmig_dual_inv"
+        },
+        {
+          "arg": "--no-mmig-auto-sr5",
+          "when_not_param": "mmig_auto_sr5"
+        }
+      ],
+      "outputs": [
+        "{out_base}_maj_opt.v",
+        "{out_base}_maj_opt.blif",
+        "{out_base}_mmig_opt.v",
+        "{out_base}_mmig_opt.blif"
+      ]
+    }
+  ]
+}
