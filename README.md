@@ -106,18 +106,25 @@ under `results/raw/<benchmark>/dse_rows.json`, which are produced by
 
 ```
 data/
-  results.json          — per-benchmark metrics extracted from DSE logs
+  results.json              — per-benchmark metrics (Table 1 numbers)
 fig/
-  mmig_comparison.pdf   — pre-generated comparison figure
-  mmig_comparison.png   — pre-generated comparison figure
+  mmig_comparison.pdf       — pre-generated comparison figure
+  mmig_comparison.png       — pre-generated comparison figure
 paper/
-  mmig_esl.pdf          — submitted manuscript
+  mmig_esl.pdf              — submitted manuscript
 results/
-  raw/                  — per-benchmark DSE logs (populated by reproduce.sh)
+  raw/                      — per-benchmark DSE logs (populated by reproduce.sh)
 scripts/
-  reproduce.sh          — end-to-end reproduction script
-  extract_results.py    — parse DSE logs → data/results.json
-  gen_figure.py         — data/results.json → fig/mmig_comparison.*
+  reproduce.sh              — end-to-end reproduction script
+  extract_results.py        — parse DSE logs → data/results.json
+  gen_figure.py             — data/results.json → fig/mmig_comparison.*
+src/
+  include/mockturtle/algorithms/mmig_*.hpp  — all mMIG algorithm headers
+  examples/blif2mig_2.cpp   — main binary source
+  tools/mmig_dse_explore.py — design-space exploration script
+  test/                     — unit tests for all mMIG passes
+  configs/flows/            — flow configuration JSON files
+  README.md                 — how to apply src/ to a mockturtle checkout
 ```
 
 ---
