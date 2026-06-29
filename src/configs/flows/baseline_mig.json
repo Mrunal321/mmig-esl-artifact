@@ -1,0 +1,73 @@
+{
+  "id": "baseline_mig",
+  "name": "Baseline MIG Flow",
+  "description": "Majority-only flow using blif2mig_2",
+  "parameters": {
+    "mode": {
+      "type": "enum",
+      "enum": ["depth", "area"],
+      "default": "depth",
+      "description": "Primary optimization objective. depth minimizes logic levels; area minimizes gate count."
+    },
+    "mig_flow": {
+      "type": "enum",
+      "enum": ["standard", "dac19_default", "dac19_area", "dac19_compat", "compress2rs", "legacy"],
+      "default": "standard",
+      "description": "MIG pass schedule preset. standard is a safe default; dac19_* and compress2rs are alternative optimization recipes."
+    },
+    "mig_allow_zero_gain": {
+      "type": "bool",
+      "default": false,
+      "description": "Allow rewrites that do not immediately improve cost. Can unlock later gains but may increase runtime."
+    },
+    "rw_override": {
+      "type": "bool",
+      "default": false,
+      "description": "Enable explicit rewrite parameter overrides (rw_cut, rw_cut_limit)."
+    },
+    "rw_cut": {
+      "type": "int",
+      "min": 2,
+      "max": 8,
+      "default": 4,
+      "description": "Cut size for rewriting when rw_override is enabled."
+    },
+    "rw_cut_limit": {
+      "type": "int",
+      "min": 1,
+      "max": 64,
+      "default": 10,
+      "description": "Cut enumeration limit for rewriting when rw_override is enabled."
+    }
+  },
+  "steps": [
+    {
+      "id": "blif2mig2",
+      "tool": "blif2mig_2",
+      "metrics_tool": "blif2mig_2",
+      "binary": "build_check/examples/blif2mig_2",
+      "args": [
+        "{benchmark_path}",
+        "{out_base}",
+        "--mode={mode}",
+        "--mig-flow={mig_flow}",
+        {
+          "arg": "--mig-allow-zero-gain",
+          "when_param": "mig_allow_zero_gain"
+        },
+        {
+          "arg": "--rw-cut={rw_cut}",
+          "when_param": "rw_override"
+        },
+        {
+          "arg": "--rw-cut-limit={rw_cut_limit}",
+          "when_param": "rw_override"
+        }
+      ],
+      "outputs": [
+        "{out_base}_maj_opt.v",
+        "{out_base}_maj_opt.blif"
+      ]
+    }
+  ]
+}
