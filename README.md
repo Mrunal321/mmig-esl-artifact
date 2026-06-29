@@ -131,16 +131,6 @@ src/
 
 ## Citation
 
-```bibtex
-@article{shende2025mmig,
-  author  = {Shende, Mrunal and Mazumdar, Bodhisatwa},
-  title   = {Mixed Majority-Minority Inverter Graphs for Inverter-Aware
-             {AQFP}-Oriented Logic Optimization},
-  note    = {Submitted manuscript},
-  year    = {2026}
-}
-```
-
 The EPFL benchmark suite:
 
 ```bibtex
