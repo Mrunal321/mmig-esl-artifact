@@ -128,7 +128,6 @@ src/
 ```
 
 ---
-
 ## Citation
 
 The EPFL benchmark suite:
